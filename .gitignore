@@ -1,0 +1,13 @@
+# OS / System files
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Extracted temporary files
+exp 5/
+
+# Build and dependencies
+node_modules/
+dist/
+.gradle/
+build/
