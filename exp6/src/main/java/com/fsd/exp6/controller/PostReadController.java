@@ -3,17 +3,19 @@ package com.fsd.exp6.controller;
 import com.fsd.exp6.dto.PostDetailDto;
 import com.fsd.exp6.dto.PostResponseDto;
 import com.fsd.exp6.service.PostReadService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
-@RequiredArgsConstructor
 public class PostReadController {
 
     private final PostReadService postReadService;
+
+    public PostReadController(PostReadService postReadService) {
+        this.postReadService = postReadService;
+    }
 
     @GetMapping
     public ResponseEntity<Page<PostResponseDto>> getPaginatedPosts(

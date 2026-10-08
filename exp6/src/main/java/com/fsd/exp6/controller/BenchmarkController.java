@@ -2,7 +2,6 @@ package com.fsd.exp6.controller;
 
 import com.fsd.exp6.dto.BenchmarkResultDto;
 import com.fsd.exp6.service.BenchmarkService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +12,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/benchmark")
-@RequiredArgsConstructor
 public class BenchmarkController {
 
     private final BenchmarkService benchmarkService;
+
+    public BenchmarkController(BenchmarkService benchmarkService) {
+        this.benchmarkService = benchmarkService;
+    }
 
     @GetMapping("/n-plus-one")
     public ResponseEntity<BenchmarkResultDto> getNPlusOneBenchmark() {

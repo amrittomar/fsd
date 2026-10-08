@@ -5,8 +5,8 @@ import com.fsd.exp6.dto.PostDetailDto;
 import com.fsd.exp6.dto.PostResponseDto;
 import com.fsd.exp6.entity.Post;
 import com.fsd.exp6.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -19,11 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class PostReadService {
 
+    private static final Logger log = LoggerFactory.getLogger(PostReadService.class);
+
     private final PostRepository postRepository;
+
+    public PostReadService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "posts-page", key = "'p_' + #page + '_s_' + #size + '_sb_' + #sortBy + '_sd_' + #sortDir + '_cat_' + (#category != null ? #category : 'all')")

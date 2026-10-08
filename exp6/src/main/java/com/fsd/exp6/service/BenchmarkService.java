@@ -3,20 +3,25 @@ package com.fsd.exp6.service;
 import com.fsd.exp6.dto.BenchmarkResultDto;
 import com.fsd.exp6.entity.Post;
 import com.fsd.exp6.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class BenchmarkService {
+
+    private static final Logger log = LoggerFactory.getLogger(BenchmarkService.class);
 
     private final PostRepository postRepository;
     private final PostReadService postReadService;
+
+    public BenchmarkService(PostRepository postRepository, PostReadService postReadService) {
+        this.postRepository = postRepository;
+        this.postReadService = postReadService;
+    }
 
     @Transactional(readOnly = true)
     public BenchmarkResultDto benchmarkNPlusOneProblem() {
@@ -25,13 +30,13 @@ public class BenchmarkService {
         // 1. Unoptimized Run (Triggers N+1 SQL queries when iterating over post author & comments)
         long startUnoptimized = System.nanoTime();
         List<Post> unoptimizedPosts = postRepository.findAllUnoptimized();
-        int unoptimizedCount = 1; // Initial query for posts
+        int unoptimizedCount = 1;
         for (Post post : unoptimizedPosts) {
             if (post.getAuthor() != null) {
-                post.getAuthor().getName(); // Triggers SELECT user query
+                post.getAuthor().getName();
                 unoptimizedCount++;
             }
-            unoptimizedCount += post.getComments().size(); // Triggers SELECT comment query
+            unoptimizedCount += post.getComments().size();
         }
         long durationUnoptimizedMs = (System.nanoTime() - startUnoptimized) / 1_000_000;
 
@@ -40,12 +45,12 @@ public class BenchmarkService {
         List<Post> optimizedPosts = postRepository.findAllOptimized();
         for (Post post : optimizedPosts) {
             if (post.getAuthor() != null) {
-                post.getAuthor().getName(); // In-memory reference access
+                post.getAuthor().getName();
             }
-            post.getComments().size(); // In-memory list size
+            post.getComments().size();
         }
         long durationOptimizedMs = (System.nanoTime() - startOptimized) / 1_000_000;
-        int optimizedCount = 1; // Single query executed
+        int optimizedCount = 1;
 
         double latencyReduction = durationUnoptimizedMs > 0 ?
                 ((double) (durationUnoptimizedMs - durationOptimizedMs) / durationUnoptimizedMs) * 100.0 : 0.0;
